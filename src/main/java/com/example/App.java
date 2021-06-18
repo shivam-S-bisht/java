@@ -1,130 +1,88 @@
 package com.example;
 
-import java.io.*;
-import java.util.*;
+import java.util.Stack;
 
 class App {
 
-    static class GenericTree implements Iterable<Integer> {
-        Node root;
+    static class Node {
+        int data;
+        Node left;
+        Node right;
 
-        GenericTree (Node root) {
-            this.root = root;
+        Node(int data, Node left, Node right) {
+            this.data = data;
+            this.left = left;
+            this.right = right;
         }
-        
-        public Iterator<Integer> iterator () {
-            Iterator<Integer> it = new GenericTreeIterator(root);
-            return it;
-        }
-    }
-
-    static class GenericTreeIterator implements Iterator<Integer> {
-
-        Integer nval;
-        Stack<Pair> st;
-
-        GenericTreeIterator (Node root) {
-            this.st = new Stack<>();
-            st.add(new Pair(root, -1));
-            next();
-        }
-
-        public boolean hasNext () {
-            if (nval == null) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        public Integer next () {
-            Integer fr = 0;
-            nval = null;
-
-            while (st.size()!=0) {
-                Pair top = st.peek();
-                if (top.state == -1) {
-                    nval = top.node.data;
-                    ++top.state;
-                    break;
-                } else if (top.state == top.node.children.size()) {
-                    st.pop();
-                } else {
-                    st.push(new Pair(top.node.children.get(top.state), -1));
-                    ++top.state;
-                }
-            }
-            return fr;
-        }
-
     }
 
     static class Pair {
         Node node;
         int state;
 
-        Pair (Node node, int state) {
+        Pair(Node node, int state) {
             this.node = node;
             this.state = state;
         }
     }
 
-    static class Node {
-        int data;
-        ArrayList<Node> children = new ArrayList<>();
-    }
+    public static void display (Node node) {
 
-    public static void display(Node node) {
-        String str = node.data + " -> ";
-        for (Node child : node.children) {
-            str += child.data + ", ";
+        if (node == null) {
+            return;
         }
-        str += ".";
+
+
+        String str = "";
+        str += node.left == null ? ".": node.left.data + "";
+        str += "<-" + node.data + "->";
+        str += node.right == null ? ".": node.right.data+ "";
         System.out.println(str);
 
-        for (Node child : node.children) {
-            display(child);
-        }
+        display(node.left);
+        display(node.right);
     }
 
-    public static Node construct(int[] arr) {
-        Node root = null;
 
-        Stack<Node> st = new Stack<>();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == -1) {
-                st.pop();
-            } else {
-                Node t = new Node();
-                t.data = arr[i];
+    public static void main(String[] args) {
+        Integer[] arr = { 50, 25, 12, null, null, 37, 30, null, null, null, 75, 62, null, 70, null, null, 87, null,
+                null };
 
-                if (st.size() > 0) {
-                    st.peek().children.add(t);
+        Node root = new Node(arr[0], null, null);
+        Pair np = new Pair(root, 1);
+        Stack<Pair> st = new Stack<>();
+        st.push(np);
+
+        int idx = 0;
+        while (st.size() != 0) {
+            Pair top = st.peek();
+            if (top.state == 1) {
+                if (arr[++idx] != null) {
+                    Node ln = new Node(arr[idx], null, null);
+                    top.node.left = ln;
+
+                    Pair lp = new Pair(ln, 1);
+                    st.push(lp);
                 } else {
-                    root = t;
+                    top.node.left = null;
                 }
+                ++top.state;
+            } else if (top.state == 2) {
+                if (arr[++idx] != null) {
+                    Node rn = new Node(arr[idx], null, null);
+                    top.node.right = rn;
 
-                st.push(t);
+                    Pair rp = new Pair(rn, 1);
+                    st.push(rp);
+                } else {
+                    top.node.right = null;
+                }
+                ++top.state;
+            } else {
+                st.pop();
             }
         }
 
-        return root;
-    }
-
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[] arr = new int[n];
-        String[] values = br.readLine().split(" ");
-        for (int i = 0; i < n; i++) {
-            arr[i] = Integer.parseInt(values[i]);
-        }
-
-        Node root = construct(arr);
-        GenericTree gt = new GenericTree(root);
-
-        for (int val: gt) {
-            System.out.println(val);
-        }
+        display(root);
     }
 }
