@@ -18,7 +18,6 @@ class App {
         }
     }
 
-
     static class GenericTreeIterator implements Iterator<Integer> {
 
         Integer nval;
