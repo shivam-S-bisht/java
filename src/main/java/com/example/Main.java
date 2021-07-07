@@ -1,151 +1,48 @@
 package com.example;
 
-class Main {
+public class Main {
 
+    public static class Node {
+        int data;
+        Node left;
+        Node right;
 
-    // Room class
-    public static class Room {
-
-        public enum roomType {
-            ONE_BEDRM, TWO_BEDRM, THREE_BEDRM, PENTHOUSE
-        }
-
-        private boolean available;
-        private Guest occupant;
-        private int roomNum;
-        private double price;
-        private roomType type;
-
-
-        // constructor
-        public Room(int roomNum, double price, roomType type) {
-            this.roomNum = roomNum;
-            this.price = price;
-            this.type = type;
-        }
-
-        public boolean isAvailable() {
-            return this.available;
-        }
-
-        public boolean getAvailable() {
-            return available;
-        }
-
-        public void setAvailable(boolean available) {
-            this.available = available;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public void setPrice(double price) {
-            this.price = price;
-        }
-
-        public roomType getRoomType() {
-            return type;
-        }
-
-        public void setRoomType(roomType type) {
-            this.type = type;
-        }
-
-        public int getRoomNumber() {
-            return roomNum;
-        }
-
-        public void setRoomNumber(int roomNum) {
-            this.roomNum = roomNum;
-        }
-
-        public Guest getGuest() {
-            return occupant;
-        }
-
-        public void setGuest(Guest occupant) {
-            this.occupant = occupant;
-        }
-
-    }
-
-
-    // Guest class 
-    public static class Guest {
-
-        private String name;
-        private boolean checkedIn;
-        private Room room;
-
-        // constructor
-        public Guest(String name) {
-            this.name = name;
-        }
-
-        public void checkIn(Room room) {
-            if (this.getStatus() == false) {
-                this.setCheckedIn(true);
-                this.setRoom(room);
-            }
-        }
-
-        public void checkOut() {
-            if (this.getStatus() == true) {
-                this.setCheckedIn(false);
-                this.setRoom(null);
-            }
-        }
-
-        public boolean getStatus() {
-            return checkedIn;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public Room getRoom() {
-            return room;
-        }
-
-        public void setRoom(Room room) {
-            this.room = room;
-        }
-
-        public void setCheckedIn(boolean checkedIn) {
-            this.checkedIn = checkedIn;
-        }
-
-        public void getRoomInfo(Room room) {
-            System.out.println("Room # : " + room.getRoomNumber());
-            System.out.println("Room price : " + room.getPrice());
-            System.out.println("Room type : " + room.getRoomType());
-            System.out.println("Room occupant : " + room.getGuest().getName());
+        Node (int data, Node left, Node right) {
+            this.data = data;
+            this.left = left;
+            this.right = right;
         }
     }
 
-    // main
-    public static void main(String[] args) throws Exception {
+    public static void display (Node node) {
+        if (node == null) {
+            return;
+        }
 
-        Guest mike = new Guest("mike");
-
-        Room one_bedroom1 = new Room(1001, 100.00, Room.roomType.ONE_BEDRM);
-        Room two_bedroom1 = new Room(2001, 200.00, Room.roomType.TWO_BEDRM);
-
-        one_bedroom1.setAvailable(true);
-        two_bedroom1.setAvailable(true);
-
-        System.out.println(one_bedroom1.isAvailable());
-
-        mike.checkIn(one_bedroom1);
-        one_bedroom1.setGuest(mike);
-        mike.getRoomInfo(one_bedroom1);
-
+        String str = "";
+        str += node.left == null ? "." : node.left.data+"";
+        str += "<-" + node.data + "->";
+        str += node.right == null ? "." : node.right.data;
+        System.out.println(str);
+        display(node.left);
+        display(node.right);
     }
+    
+    public static Node construct (int[] arr, int lo, int hi) {
+        if (lo>hi) {
+            return null;
+        }
 
+        int mid = (lo+hi)/2;
+        int data = arr[mid];
+        Node lc = construct(arr, lo, mid-1);
+        Node rc = construct(arr,mid+1, hi);
+        Node node = new Node(data, lc, rc);
+        return node;
+    }
+    public static void main(String[] args) {
+        int[] arr = {12, 25, 37, 50, 62, 87};
+        Node root = construct(arr, 0, arr.length-1);
+        display(root);
+    }
 }
